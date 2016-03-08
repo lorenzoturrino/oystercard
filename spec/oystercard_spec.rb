@@ -2,7 +2,8 @@ require 'oystercard'
 
 describe Oystercard do
 
-  subject(:oystercard) {described_class.new}
+  subject(:oystercard) { described_class.new }
+  let(:entry_station) { double(:Station) }
   balance = described_class::MAX_BALANCE
   min_fare = described_class::MIN_FARE
 
@@ -34,14 +35,20 @@ describe Oystercard do
   end
 
   describe '#touch_in' do
+
     it 'changes the state of #in_journey? to true' do
       oystercard.top_up(min_fare)
-      expect { oystercard.touch_in }.to change { oystercard.in_journey? }.to true
+      expect { oystercard.touch_in entry_station }.to change { oystercard.in_journey? }.to true
     end
 
     it 'raises an error if balance is not sufficent for single journey' do
       message = "Not enough funds"
-      expect { oystercard.touch_in }.to raise_error message
+      expect { oystercard.touch_in entry_station }.to raise_error message
+    end
+
+    it 'remembers the entry station when touching in' do
+      oystercard.top_up(min_fare)
+      expect { oystercard.touch_in entry_station }.to change { oystercard.entry_station }
     end
   end
 
@@ -54,7 +61,7 @@ describe Oystercard do
   describe '#touch_out' do
     it 'should change state of in_journey to false' do
       oystercard.top_up(min_fare)
-      oystercard.touch_in
+      oystercard.touch_in entry_station
       expect{oystercard.touch_out}.to change { oystercard.in_journey? }.to false
     end
 

@@ -1,6 +1,6 @@
 class Oystercard
 
-  attr_reader :balance
+  attr_reader :balance, :entry_station
 
   MAX_BALANCE = 90
   MIN_FARE = 1
@@ -16,8 +16,9 @@ class Oystercard
     @balance += amount
   end
 
-  def touch_in
+  def touch_in(station)
     sufficent_funds?
+    @entry_station = station
     @in_journey = true
   end
 
