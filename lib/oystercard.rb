@@ -16,10 +16,6 @@ class Oystercard
     @balance += amount
   end
 
-  def deduct(amount)
-    @balance -= amount
-  end
-
   def touch_in
     sufficent_funds?
     @in_journey = true
@@ -30,10 +26,15 @@ class Oystercard
   end
 
   def touch_out
+    deduct MIN_FARE
     @in_journey = false
   end
 
   private
+
+  def deduct(amount)
+    @balance -= amount
+  end
 
   def sufficent_funds?
     message = "Not enough funds"

@@ -33,12 +33,6 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-    it 'changes the balance' do
-      expect{ oystercard.deduct balance }.to change{ oystercard.balance }.by -balance
-    end
-  end
-
   describe '#touch_in' do
     it 'changes the state of #in_journey? to true' do
       oystercard.top_up(min_fare)
@@ -62,6 +56,10 @@ describe Oystercard do
       oystercard.top_up(min_fare)
       oystercard.touch_in
       expect{oystercard.touch_out}.to change { oystercard.in_journey? }.to false
+    end
+
+    it 'changes the balance' do
+      expect{ oystercard.touch_out }.to change{ oystercard.balance }.by -min_fare
     end
   end
 
