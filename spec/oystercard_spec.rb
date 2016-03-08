@@ -59,10 +59,10 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
-    it 'should change state of in_journey to false' do
+    it 'should change entry_station to nil' do
       oystercard.top_up(min_fare)
       oystercard.touch_in entry_station
-      expect{oystercard.touch_out}.to change { oystercard.in_journey? }.to false
+      expect{ oystercard.touch_out }.to change { oystercard.entry_station }.to nil
     end
 
     it 'changes the balance' do
