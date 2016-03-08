@@ -3,6 +3,8 @@ require 'oystercard'
 describe Oystercard do
 
   subject(:oystercard) {described_class.new}
+  balance = described_class::MAX_BALANCE
+
 
   describe '#initialization' do
     it "expect #balance to be 0" do
@@ -22,11 +24,10 @@ describe Oystercard do
 
   describe '#top_up' do
     it 'can top up balance' do
-      expect{ oystercard.top_up 5 }.to change{ oystercard.balance }.by 5
+      expect{ oystercard.top_up balance }.to change{ oystercard.balance }.by balance
     end
 
     it 'fails if topup exceeds maximum balance' do
-      balance = described_class::MAX_BALANCE
       message = "Top up exceeds the maximum balance of #{balance}"
       expect{ oystercard.top_up(balance + 1) }.to raise_error message
     end
@@ -34,12 +35,12 @@ describe Oystercard do
 
   describe '#deduct' do
     it 'changes the balance' do
-      expect{ oystercard.deduct 5 }.to change{ oystercard.balance }.by -5
+      expect{ oystercard.deduct balance }.to change{ oystercard.balance }.by -balance
     end
   end
 
   describe '#touch_in' do
-    it 'changes the state of #in_journey?' do
+    it 'changes the state of #in_journey? to true' do
       expect { oystercard.touch_in }.to change { oystercard.in_journey? }.to true
     end
   end
@@ -51,8 +52,10 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
-    it { is_expected.to respond_to(:touch_out) }
+    it 'should change state of in_journey to false' do
+      oystercard.touch_in
+      expect{oystercard.touch_out}.to change { oystercard.in_journey? }.to false
+    end
   end
-
 
 end
