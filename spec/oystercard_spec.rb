@@ -50,11 +50,6 @@ describe Oystercard do
       message = "Not enough funds"
       expect { oystercard.touch_in station_in }.to raise_error message
     end
-
-    it 'remembers the entry station when touching in' do
-      oystercard.top_up(min_fare)
-      expect { oystercard.touch_in station_in }.to change { oystercard.entry_station }
-    end
   end
 
   describe '#in_journey?' do
@@ -64,12 +59,6 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
-    it 'should change entry_station to nil' do
-      oystercard.top_up(min_fare)
-      oystercard.touch_in station_in
-      expect{ oystercard.touch_out station_out }.to change { oystercard.entry_station }.to nil
-    end
-
     it 'changes the balance' do
       expect{ oystercard.touch_out station_out }.to change{ oystercard.balance }.by -min_fare
     end
