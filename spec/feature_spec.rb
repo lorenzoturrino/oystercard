@@ -1,4 +1,5 @@
 require 'oystercard'
+require 'station'
 
 card = Oystercard.new
 
