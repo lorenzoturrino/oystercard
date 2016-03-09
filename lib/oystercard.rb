@@ -1,15 +1,15 @@
-
+require_relative 'journey'
 
 class Oystercard
 
   attr_reader :balance, :history
 
   MAX_BALANCE = 90
-  MIN_FARE = 1
 
   def initialize
     @balance = 0
     @history = []
+    @min_fare = Journey::MIN_FARE
   end
 
   def top_up(amount)
@@ -28,7 +28,7 @@ class Oystercard
   end
 
   def touch_out(station)
-    deduct MIN_FARE
+    deduct @min_fare
     log_journey station
     @entry_station = nil
   end
@@ -41,7 +41,7 @@ class Oystercard
 
   def sufficent_funds?
     message = "Not enough funds"
-    raise message if @balance < MIN_FARE
+    raise message if @balance < @min_fare
   end
 
   def log_journey station

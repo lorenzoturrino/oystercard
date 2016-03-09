@@ -6,7 +6,7 @@ describe Oystercard do
   let(:station_in) { double(:Station) }
   let(:station_out) { double(:Station) }
   balance = described_class::MAX_BALANCE
-  min_fare = described_class::MIN_FARE
+  min_fare = Journey::MIN_FARE
 
   describe '#initialization' do
     it "expect #balance to be 0" do
@@ -22,12 +22,6 @@ describe Oystercard do
     end
   end
 
-  describe '#balance'do
-    #it { is_expected.to respond_to(:balance) }
-    #it { is_expected.to respond_to(:top_up).with(1).argument }
-
-  end
-
   describe '#top_up' do
     it 'can top up balance' do
       expect{ oystercard.top_up balance }.to change{ oystercard.balance }.by balance
@@ -40,7 +34,6 @@ describe Oystercard do
   end
 
   describe '#touch_in' do
-
     it 'changes the state of #in_journey? to true' do
       oystercard.top_up(min_fare)
       expect { oystercard.touch_in station_in }.to change { oystercard.in_journey? }.to true
