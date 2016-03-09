@@ -5,6 +5,7 @@ describe Oystercard do
   subject(:oystercard) { described_class.new }
   let(:station_in) { double(:Station) }
   let(:station_out) { double(:Station) }
+
   balance = described_class::MAX_BALANCE
   min_fare = Journey::MIN_FARE
 
@@ -52,16 +53,25 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
-    it 'changes the balance' do
+
+    xit 'changes the balance' do
       expect{ oystercard.touch_out station_out }.to change{ oystercard.balance }.by -min_fare
     end
 
-    it 'logs journey history' do
+    xit 'logs journey history' do
       oystercard.top_up(min_fare)
       oystercard.touch_in station_in
       journey = { entry_station: station_in, exit_station: station_out }
       expect{ oystercard.touch_out station_out }.to change { oystercard.history }.to include journey
     end
+
+    it 'add a journey to the log' do
+      oystercard.top_up(min_fare)
+      oystercard.touch_in station_in
+      oystercard.touch_out station_out
+      expect(oystercard.history.size).to eq 1
+    end
+
   end
 
 end
