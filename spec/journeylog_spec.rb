@@ -11,5 +11,12 @@ describe Journeylog do
       expect(journey_klass).to receive(:new).with(entry_station: station)
       journeylog.start_journey(station)
     end
+
+    it 'should record a journey' do
+      journeylog.start_journey(station)
+      expect(journeylog.journeys).to include journey
+    end
   end
+
+  describe '#end_journey'
 end

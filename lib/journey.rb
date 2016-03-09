@@ -3,14 +3,17 @@ class Journey
   PENALTY_FARE = 6
   attr_reader :entry_station , :exit_station
 
-  def initialize journey_hash
-    @entry_station = journey_hash[:entry_station]
-    @exit_station =  journey_hash[:exit_station]
+  def initialize entry_station
+    @entry_station = entry_station
   end
 
   def fare
     return 6 if penalty_due?
     1
+  end
+
+  def end_journey exit_station
+    @exit_station = exit_station
   end
 
   private
