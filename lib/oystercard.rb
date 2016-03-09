@@ -49,7 +49,7 @@ class Oystercard
 
   def sufficent_funds?
     message = "Not enough funds"
-    raise message if @balance < min_fare
+    raise message if @balance < @min_fare
   end
 
   def log_journey current_journey
