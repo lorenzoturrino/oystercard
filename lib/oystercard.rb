@@ -9,7 +9,6 @@ class Oystercard
   def initialize
     @balance = 0
     @history = []
-    @min_fare = Journey::MIN_FARE
   end
 
   def top_up(amount)
@@ -19,6 +18,7 @@ class Oystercard
   end
 
   def touch_in(station)
+    log_journey if in_journey?
     sufficent_funds?
     @entry_station = station
   end
@@ -28,7 +28,7 @@ class Oystercard
   end
 
   def touch_out(station)
-    deduct @min_fare
+    deduct min_fare
     log_journey station
     @entry_station = nil
   end
@@ -41,10 +41,16 @@ class Oystercard
 
   def sufficent_funds?
     message = "Not enough funds"
-    raise message if @balance < @min_fare
+    raise message if @balance < min_fare
   end
 
-  def log_journey station
-    @history << { entry_station: @entry_station, exit_station: station }
+  def log_journey station=nil
+    current_journey = Journey.new{entry_station: entry_station, exit_station: station}
+    deduct current_journey.fare
+    @history << current_journey
+  end
+
+  def min_fare
+    Journey::MIN_FARE
   end
 end
