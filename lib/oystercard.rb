@@ -4,17 +4,30 @@ class Oystercard
 
   DEFAULT_BALANCE = 0
   MAX_LIMIT = 90
+  MIN_FARE = 1
 
   MAX_ERROR = "Maximum balance reached"
+  MIN_ERROR = "You must top-up your Oystercard"
   attr_reader :balance
 
-  def initialize
+  def initialize(journey_log)
+    @journey_log = journey_log
     @balance = DEFAULT_BALANCE
   end
 
   def top_up top_amount
     raise MAX_ERROR if @balance + top_amount > MAX_LIMIT
     @balance += top_amount
+  end
+
+  def touch_in(station)
+    raise MIN_ERROR if @balance < MIN_FARE
+    @journey_log.start_new_journey(station)
+  end
+
+  def touch_out(station)
+    @journey_log.close_current_journey(station)
+    @balance -= @journey_log.outstanding_fares
   end
 
 end

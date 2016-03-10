@@ -1,9 +1,8 @@
 require 'oystercard'
 
 describe Oystercard do
-
-  subject(:oystercard){described_class.new}
-  let(:journey_log) {double :journey_log, start_new_journey: nil, close_current_journey: nil, outstanding_fares: nil}
+  subject(:oystercard){described_class.new(journey_log)}
+  let(:journey_log) {double :journey_log, start_new_journey: nil, close_current_journey: nil, outstanding_fares: 1}
   let(:station) {double :station}
 
   it "starts with default balance of £#{described_class::DEFAULT_BALANCE}" do
@@ -24,7 +23,7 @@ describe Oystercard do
 
   describe '#touch_in' do
 
-    it 'it ask the log to start a new journey' do
+    it 'ask the log to start a new journey' do
       oystercard.top_up(1)
       expect(journey_log).to receive(:start_new_journey).with(station)
       oystercard.touch_in(station)
@@ -43,14 +42,18 @@ describe Oystercard do
       oystercard.touch_in(station)
     end
 
-    it 'it ask the log to close the current journey' do
+    it 'ask the log to close the current journey' do
       expect(journey_log).to receive(:close_current_journey).with(station)
       oystercard.touch_out(station)
     end
 
-    it 'it ask for a fare to be returned' do
+    it 'ask for a fare to be returned' do
       expect(journey_log).to receive(:outstanding_fares)
-      oystercard.touch_out
+      oystercard.touch_out(station)
+    end
+
+    it 'changes balance after retieving fare' do
+      expect{oystercard.touch_out(station)}.to change{oystercard.balance}.by -1
     end
 
   end
