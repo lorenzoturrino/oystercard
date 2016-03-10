@@ -3,7 +3,7 @@ require 'oystercard'
 describe Oystercard do
 
   subject(:oystercard){described_class.new}
-  let(:journey_log) {double :journey_log, start: nil}
+  let(:journey_log) {double :journey_log, start_new_journey: nil, close_current_journey: nil}
   let(:station) {double :station}
 
   it "starts with default balance of £#{described_class::DEFAULT_BALANCE}" do
@@ -24,22 +24,31 @@ describe Oystercard do
 
   describe '#touch_in' do
 
-    it 'it aks the log to start a new journey' do
+    it 'it ask the log to start a new journey' do
       oystercard.top_up(1)
-      expect(journey_log).to receive(:start)
+      expect(journey_log).to receive(:start_new_journey).with(station)
       oystercard.touch_in(station)
     end
 
-    it 'raise an error if youe below minimum fare' do
+    it 'raise an error if you\'re below minimum fare' do
       expect {oystercard.touch_in(station)}.to raise_error described_class::MIN_ERROR
     end
 
   end
 
   describe '#touch_out' do
+
     before (:each) do
       oystercard.top_up(1)
+      oystercard.touch_in(station)
     end
+
+    it 'it ask the log to close the current journey' do
+      expect(journey_log).to receive(:close_current_journey).with(station)
+      oystercard.touch_out(station)
+    end
+
+
   end
 
 end
