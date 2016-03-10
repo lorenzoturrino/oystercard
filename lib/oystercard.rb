@@ -14,7 +14,7 @@ require_relative 'journey_log'
   def initialize(journey_log_class: JourneyLog)
     @balance = DEFAULT_BALANCE
     @journeys = []
-    # @journeys = journey_log_class.new
+    #@journeys = journey_log_class.new
     @journey_class = journey_log_class
   end
 
