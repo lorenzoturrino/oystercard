@@ -1,99 +1,58 @@
 require 'oystercard'
 
 describe Oystercard do
-  subject(:Oystercard) {described_class}
 
-  let(:station){double :station}
-  let(:entry_station) { double :station }
-  let(:exit_station) { double :station }
-  let(:trip){{entry_station: entry_station, exit_station: exit_station}}
+  subject(:oystercard){described_class.new}
+  let(:journey_log) {double :journey_log, start_new_journey: nil, close_current_journey: nil, outstanding_fares: nil}
+  let(:station) {double :station}
 
-  let(:journey_class) { double :journey_class, new: journey_instance }
-  let(:journey_instance) { double :journey_instance, add_station: nil, fare: Oystercard::MIN_FARE }
-  subject(:oystercard) {described_class.new(journey_log_class: journey_class)}
-
-
-
-  describe 'new card' do
-    it 'with balance of £0' do
-      expect(oystercard.balance).to eq 0
-    end
+  it "starts with default balance of £#{described_class::DEFAULT_BALANCE}" do
+    expect(oystercard.balance).to eq described_class::DEFAULT_BALANCE
   end
 
   describe '#top_up' do
+
     it 'expect to add amount to card balance' do
       expect {oystercard.top_up(10)}.to change{oystercard.balance}.by 10
     end
 
     it "expects to raise error when max limit exceeded" do
-      fare = Oystercard::MAX_LIMIT + 1
-      expect{oystercard.top_up fare}.to raise_error Oystercard::MAX_ERROR
-    end
-  end
-
-  describe '#in_journey' do
-    before do
-      oystercard.top_up(10)
-      oystercard.touch_in(entry_station)
-    end
-
-    it 'changes status of card to in use after touching in' do
-      expect(oystercard).to be_in_journey
-    end
-
-    it 'deducts penalty fare when touch_in occurs in_journey' do
-      allow(journey_instance).to receive(:fare).and_return(Oystercard::PENALTY_FARE)
-      expect{oystercard.touch_in(entry_station)}.to change{oystercard.balance}.by -Oystercard::PENALTY_FARE
-    end
-
-    it 'stores partial journey when touch_in occurs in_journey' do
-      oystercard.touch_in(entry_station)
-      expect(oystercard.journeys).to include journey_instance
-    end
-
-    it 'returns status of card' do
-      oystercard.touch_out(exit_station)
-      expect(oystercard).not_to be_in_journey
+      oystercard.top_up(described_class::MAX_LIMIT)
+      expect{oystercard.top_up(1)}.to raise_error described_class::MAX_ERROR
     end
   end
 
   describe '#touch_in' do
-    it 'raises error when minimum balance reached' do
-      expect {oystercard.touch_in(entry_station)}.to raise_error Oystercard::MIN_ERROR
+
+    it 'it ask the log to start a new journey' do
+      oystercard.top_up(1)
+      expect(journey_log).to receive(:start_new_journey).with(station)
+      oystercard.touch_in(station)
     end
+
+    it 'raise an error if you\'re below minimum fare' do
+      expect {oystercard.touch_in(station)}.to raise_error described_class::MIN_ERROR
+    end
+
   end
 
   describe '#touch_out' do
-    before do
+
+    before (:each) do
       oystercard.top_up(1)
-    end
-    it 'deducts fare from balance after touching out' do
-      oystercard.touch_in(entry_station)
-      expect{oystercard.touch_out(exit_station)}.to change{oystercard.balance}.by -Oystercard::MIN_FARE
+      oystercard.touch_in(station)
     end
 
-    it 'deducts penalty fare when touch_out occurs not in_journey' do
-      allow(journey_instance).to receive(:fare).and_return(Oystercard::PENALTY_FARE)
-      expect{oystercard.touch_out(exit_station)}.to change{oystercard.balance}.by -Oystercard::PENALTY_FARE
+    it 'it ask the log to close the current journey' do
+      expect(journey_log).to receive(:close_current_journey).with(station)
+      oystercard.touch_out(station)
     end
 
-    it 'stores journey upon touch out' do
-      oystercard.touch_in(entry_station)
-      oystercard.touch_out(exit_station)
-      expect(oystercard.journeys).to include journey_instance
+    it 'it ask for a fare to be returned' do
+      expect(journey_log).to receive(:outstanding_fares)
+      oystercard.touch_out
     end
 
-    it 'only stores one journey if touch_in / touch_out sequence normal' do
-      oystercard.touch_in(entry_station)
-      oystercard.touch_out(exit_station)
-      expect(oystercard.journeys.length).to eq 1
-    end
   end
 
-  describe '#journeys' do
-    it 'starts with no journeys' do
-      oystercard.top_up(1)
-      expect(oystercard.journeys).to be_empty
-    end
-  end
 end
