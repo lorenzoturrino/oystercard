@@ -9,12 +9,14 @@ class JourneyLog
     @journey_log = Array.new
   end
 
-  def start_new_journey(station)
+  def start_new_journey(station=nil)
+    close_current_journey unless @current_journey.nil?
     @current_journey = @journey_class.new(station)
   end
 
-  def close_current_journey(station)
-    @current_journey.add_exit_station(station)
+  def close_current_journey(station=nil)
+    @current_journey = @journey_class.new if @current_journey.nil?
+    @current_journey.end_trip(station)
     @journey_log << @current_journey
     @current_journey = nil
   end
@@ -22,6 +24,5 @@ class JourneyLog
   def outstanding_fares
     @journey_log.last.fare
   end
-
 
 end

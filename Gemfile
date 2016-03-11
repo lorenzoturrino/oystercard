@@ -6,4 +6,5 @@ group :test, :development do
   gem 'rspec'
   gem 'coveralls', require: false
   gem 'rake'
+  gem 'pry-byebug'
 end
