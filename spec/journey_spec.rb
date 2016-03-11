@@ -1,13 +1,17 @@
 require 'journey'
 
 describe Journey do
-  subject(:journey) {described_class.new station}
-  let(:station) {double :station}
+  subject(:journey) { described_class.new station }
+  let(:station) { double :station }
 
   describe "#initalize" do
 
     it 'gets initalized with a starting station' do
       expect(journey.starting_station).to eq station
+    end
+
+    it 'gets initalized with ending_station nil' do
+      expect(journey.ending_station).to eq nil
     end
 
   end

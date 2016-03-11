@@ -3,9 +3,9 @@ class Journey
   MIN_FARE = 1
   PENALTY_FARE = 6
 
-  attr_reader :starting_station, :ending_station
+  attr_reader :starting_station #, :ending_station
 
-  def initialize station = nil
+  def initialize(station = nil)
     @starting_station = station
   end
 
@@ -17,6 +17,11 @@ class Journey
     return PENALTY_FARE if starting_station.nil? || ending_station.nil?
     MIN_FARE
   end
+
+
+
+
+
   # def add_station(station)
   #   trip.merge!(station)
   # end
